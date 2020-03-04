@@ -1,0 +1,239 @@
+
+
+Domain Aspects
+
+Composite item
+
+PO -> Bill -> Receive - > Bill payment
+
+Bundling
+
+SO ->Package ->Invoice -> Payment
+-> Return -> Credit note
+
+Accounting entries in books application. Refer Journal report for the entered transactions
+
+Engineering
+
+Develop a small module that we already built in our application
+
+Work in Rest API that we documented already 
+
+Security Aspect
+
+O-Auth concept
+
+-----------------------------------------------------------------------------------------------
+
+
+
+
+
+Query:
+
+select st.item_id,st.item_name,st.in_qty as Quantity_In,SUM(ifnull(o.qty,0)) as Quantity_Out,st.stock as Stock_On_Hand  from (select * from orders where invoice_id in (select invoice_id from invoice where MONTH(date)=?)) as o right outer join (select i.stock,i.item_id,i.item_name,SUM(ifnull(s.qty,0)) as in_qty from (select * from stocks where bill_id in (select bill_id from bill where MONTH(date)=?)) as s right outer join items i on s.item_id = i.item_id group by i.item_id) as st on o.item_id = st.item_id group by st.item_id;
+
+TABLES:
+Items:
+{
+	item_id
+	item_name
+	stock
+	price
+}
+Stocks:
+{
+	bill_id
+	item_id
+	qty
+	price
+}
+Orders:
+{
+	invoice_id
+	item_id
+	qty
+	price
+}
+Invoice:
+{
+	invoice_id
+	user_id
+	date
+	total
+}
+Bill:
+{
+	bill_id
+	vendor_id
+	date
+	total
+}
+
+-----------------------------------------------------------------------------------------------
+
+- [x] IO
+- [x] Connectors
+- [x] Network
+- [x] Server and Client
+- [x] Filters
+- [x] Filter Mapping
+- [x] REST
+- [x] SaaS
+- [x] OWASP
+- [x] JSON
+- [x] Servlet Engine
+- [x] Servlets
+- [x] Web.xml
+- [x] WEB-INF
+- [x] Tomcat
+- [x] GIT
+- [x] DBMS
+- [x] MySQL
+- [x] JDBC
+- [x] OOP
+- [x] Java
+
+-----------------------------------------------------------------------------------------------
+
+select st.item_id,st.item_name,st.in_qty as Quantity_In,SUM(ifnull(o.qty,0)) as Quantity_Out,(st.in_qty-SUM(ifnull(o.qty,0))) as Stock_On_Hand
+    from (select * from orders where invoice_id in (select invoice_id from invoice where MONTH(date)<=1 and YEAR(date)=2020)) as o
+         right outer join (select i.stock,i.item_id,i.item_name,SUM(ifnull(s.qty,0)) as in_qty
+                from (select * from stocks where bill_id in (select bill_id from bill where MONTH(date)<=1 and YEAR(date)=2020)) as s
+                        right outer join items i on s.item_id = i.item_id group by i.item_id) as st on o.item_id = st.item_id group by st.item_id;
+
+Purchases
+Select * from 
+Select s.itemid,SUM(s.qty),0  from bills b
+Inner join stocks s on s.billid = b.billid
+Where b.date between X and Y
+Group by itemid
+UNION ALL
+Sales
+Select s.itemid,0,SUM(s.qty)  from invoices b
+Inner join order s on s.billid = b.billid
+Where b.date between X and Y
+Group by itemid
+
+
+Select itemid, SUM(qty) from items
+Left join bills on bills.itemid = items.itemid
+Left join stocks on stocks.billid = bills.itemid
+Where bills.date between A and B
+Group by items.itemid
+
+-----------------------------------------------------------------------------------------------
+#38148192
+Can’t add categories
+
+-----------------------------------------------------------------------------------------------
+
+Client ID successfully registered
+Client ID: 1000.NPDQZYOM2UVFTBZFVGQYCB4DR6D6YH
+Client Secret: 47e006835ff9a2ef21ca71ac80f4226940a896c98d
+Close
+
+
+
+
+Client ID: 1000.S5MF54L75LOR81HWYWVSG60URIQWTH
+Client Secret: 5e0078fbf5dbdfb2f91636f439eb06d9e40089c79b
+Close
+
+
+
+
+
+{
+    "access_token": "1000.cbae061020c3c5a24ea3651121e701b8.592f564931f13fb684edc8c66b66572b",
+    "refresh_token": "1000.d6dc05e1ac7550a148fa81e150061645.3cf8df422f9acbc65444b3aff7b89b20",
+    "api_domain": "https://www.zohoapis.com",
+    "token_type": "Bearer",
+    "expires_in": 3600
+}
+
+-----------------------------------------------------------------------------------------------
+OAUTH
+
+
+Client ID: 1000.S5MF54L75LOR81HWYWVSG60URIQWTH
+Client Secret: 5e0078fbf5dbdfb2f91636f439eb06d9e40089c79b
+
+
+ "refresh_token": "1000.d6dc05e1ac7550a148fa81e150061645.3cf8df422f9acbc65444b3aff7b89b20"
+
+
+
+Temps:
+
+"access_token": "1000.cbae061020c3c5a24ea3651121e701b8.592f564931f13fb684edc8c66b66572b",
+
+
+
+
+
+Note:
+
+Access token valid for an hour only, generate new access token using refresh token
+
+
+Access token to be passed as header
+Header Name: Authorization
+Header Value: Zoho-oauthtoken <access_token>
+
+-----------------------------------------------------------------------------------------------
+
+po = Map();
+po.put("purchaseorder_number","");
+po.put("vendor_id",custVendorID);
+po.put("payment_terms",30);
+//po.put("next_action","approve");
+po.put("ship_via","Infarm Berlin Ops");
+po.put("line_items",POlineItems);
+jsonString = Map();
+jsonString.put("JSONString",po);
+createPOinCustomer = zoho.inventory.createRecord("PurchaseOrders",custOrgID,po);
+
+
+/*
+custVendorID=4000000002795;
+custorgID=15035715;
+po = Map();
+po.put("purchaseorder_number","PO-00008");
+po.put("vendor_id",custVendorID);
+po.put("payment_terms",30);
+//po.put("next_action","approve");
+po.put("ship_via","Infarm Berlin Ops");
+POlineItems=
+            [{"item_id":"4000000002818","account_id":"4000000000650","name":"Item 1","description":"","item_custom_fields":[],"item_order":"0","rate":1000,"quantity":"2.00","unit":"pcs","tax_id":"","tags":[]}];
+info POlineItems;
+/*
+po.put("line_items",POlineItems);
+jsonString = Map();
+jsonString.put("JSONString",po);
+createPOinCustomer = zoho.inventory.createRecord("PurchaseOrders",custOrgID,po);
+*/
+
+-----------------------------------------------------------------------------------------------
+
+
+
+
+RespectiveClass is mapped in ZIZBZOMRequestByPost/Get… or APIRequestByPost/Get… .xml files
+EntityXMLFormat name is also defined in the same file
+OutputXMLFormat is also defined
+
+The actual EntityXMLFormat is defined in either of 3 files… ZIZBZOMEntityXMLFormat / v1/EntityXMLFormat / templates/EntityXMLFormat
+
+EntityXMLFormat is used to refer to the format of the JSON so that it can be mapped into a data object so as to be inserted into the DB
+
+
+DataObject…
+
+Filters -> RestAPIServlet.service -> RestAPIServlet.handleRequest -> RestAPIServletUtil.handlePreProcess -> RespectiveClass.handlePreProcess -> RestAPIServletUtil.handlePreProcess -> RestAPIServlet.handleRequest -> 
+
+
+
+Sales, invoices… response formats….
+
+
